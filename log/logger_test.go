@@ -81,6 +81,39 @@ func TestSimpleLogger_Debug(t *testing.T) {
 	assert.Equal(t, "level:debug\tmessage:Hello\n", suf)
 }
 
+func TestSimpleLogger_Info(t *testing.T) {
+	observer := &logObserver{}
+	logger := log.NewSimpleLogger(observer)
+
+	writeLog(logger, log.InfoLogLevel)
+	assert.Equal(t, 1, len(observer.entries))
+	assert.Greater(t, len(observer.entries[0]), 40)
+	suf := observer.entries[0][39:]
+	assert.Equal(t, "level:info\tmessage:Hello\n", suf)
+}
+
+func TestSimpleLogger_Warn(t *testing.T) {
+	observer := &logObserver{}
+	logger := log.NewSimpleLogger(observer)
+
+	writeLog(logger, log.WarnLogLevel)
+	assert.Equal(t, 1, len(observer.entries))
+	assert.Greater(t, len(observer.entries[0]), 40)
+	suf := observer.entries[0][39:]
+	assert.Equal(t, "level:warn\tmessage:Hello\n", suf)
+}
+
+func TestSimpleLogger_Error(t *testing.T) {
+	observer := &logObserver{}
+	logger := log.NewSimpleLogger(observer)
+
+	writeErrorLog(logger, errors.New("oopsie"))
+	assert.Equal(t, 1, len(observer.entries))
+	assert.Greater(t, len(observer.entries[0]), 40)
+	suf := observer.entries[0][39:]
+	assert.Equal(t, "level:error\terror:oopsie\tmessage:Something went wrong\n", suf)
+}
+
 func writeLog(logger log.Logger, lv log.LogLevel, fields ...log.LogField) {
 	switch lv {
 	case log.DebugLogLevel:
@@ -90,6 +123,10 @@ func writeLog(logger log.Logger, lv log.LogLevel, fields ...log.LogField) {
 	case log.WarnLogLevel:
 		logger.Warn("Hello", fields...)
 	}
+}
+
+func writeErrorLog(logger log.Logger, err error, fields ...log.LogField) {
+	logger.Error("Something went wrong", err, fields...)
 }
 
 type noopWriter struct{}

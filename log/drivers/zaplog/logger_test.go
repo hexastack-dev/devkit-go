@@ -55,7 +55,7 @@ func TestLogger_Warn(t *testing.T) {
 func TestLogger_Error(t *testing.T) {
 	core, observedLogs := observer.New(zap.InfoLevel)
 	logger := zaplog.New(zap.New(core))
-	writeError(logger, errors.New("oopsie"))
+	writeErrorLog(logger, errors.New("oopsie"))
 
 	assert.Equal(t, observedLogs.Len(), 1)
 	assert.Equal(t, "Something went wrong", observedLogs.All()[0].Message)
@@ -146,7 +146,7 @@ func writeLog(logger log.Logger, lv log.LogLevel, fields ...log.LogField) {
 	}
 }
 
-func writeError(logger log.Logger, err error, fields ...log.LogField) {
+func writeErrorLog(logger log.Logger, err error, fields ...log.LogField) {
 	logger.Error("Something went wrong", err, fields...)
 }
 
