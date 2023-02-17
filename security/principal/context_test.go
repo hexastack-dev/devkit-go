@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/hexastack-dev/devkit-go/security/principal"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestContext(t *testing.T) {
@@ -20,34 +22,22 @@ func TestContext(t *testing.T) {
 	u.Roles().Add(principal.Role{Name: "ROLE_ABC"})
 	ctx = principal.ContextWithUser(ctx, u)
 
-	if u, ok := principal.UserFromContext(ctx); !ok {
-		t.Error("user should be found in the context")
-	} else {
-		if u.Roles() == nil {
-			t.Errorf("roles should not be nil: %+v", u.Roles())
-		} else {
-			roles := u.Roles()
-			if len(roles) != 1 {
-				t.Errorf("roles length should be 1: %d", len(roles))
-			}
-			role, ok := roles.Get("ROLE_ABC")
-			if !ok {
-				t.Error("ROLE_ABC should be found")
-			}
-			if role.Name != "ROLE_ABC" {
-				t.Errorf("role.Name should be equals ROLE_ABC: %s", role.Name)
-			}
-			rolev := u.Roles().Values()
-			if len(rolev) != 1 {
-				t.Errorf("roleValues length should be 1: %d", len(rolev))
-			}
-			if rolev[0].Name != "ROLE_ABC" {
-				t.Errorf("role[0].Name should equals ROLE_ABC: %s", rolev[0].Name)
-			}
-		}
-	}
-
 	u, ok := principal.UserFromContext(ctx)
+	require.True(t, ok, "user should be found in the context")
+	require.NotNil(t, u.Roles(), "roles should not be nil")
+
+	roles := u.Roles()
+	require.Equal(t, 1, len(roles))
+
+	role, ok := roles.Get("ROLE_ABC")
+	assert.True(t, ok, "ROLE_ABC should be found")
+	assert.Equal(t, "ROLE_ABC", role.Name)
+
+	rolev := u.Roles().Values()
+	require.Equal(t, 1, len(rolev))
+	assert.Equal(t, "ROLE_ABC", rolev[0].Name)
+
+	u, ok = principal.UserFromContext(ctx)
 	if !ok {
 		t.Fatal("user should be found in the context")
 	}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/hexastack-dev/devkit-go/security"
 	"github.com/hexastack-dev/devkit-go/security/principal"
+	"github.com/stretchr/testify/assert"
 )
 
 func handleHello(w http.ResponseWriter, r *http.Request) {
@@ -22,9 +23,7 @@ func TestRolesAllowed(t *testing.T) {
 	rr := httptest.NewRecorder()
 	h.ServeHTTP(rr, req)
 	res := rr.Result()
-	if res.StatusCode != http.StatusUnauthorized {
-		t.Errorf("response should be Unauthorized: %d", rr.Code)
-	}
+	assert.Equal(t, http.StatusUnauthorized, res.StatusCode, "response should be Unauthorized")
 
 	u := &principal.User{
 		Id: "123abc",
@@ -36,9 +35,7 @@ func TestRolesAllowed(t *testing.T) {
 	rr = httptest.NewRecorder()
 	h.ServeHTTP(rr, req)
 	res = rr.Result()
-	if res.StatusCode != http.StatusForbidden {
-		t.Errorf("response should be Forbidden: %d", rr.Code)
-	}
+	assert.Equal(t, http.StatusForbidden, res.StatusCode, "response should be Forbidden")
 
 	u.Roles().Add(principal.Role{Name: "editor"})
 	req = req.WithContext(principal.ContextWithUser(req.Context(), u))
@@ -46,7 +43,5 @@ func TestRolesAllowed(t *testing.T) {
 	rr = httptest.NewRecorder()
 	h.ServeHTTP(rr, req)
 	res = rr.Result()
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("response should be OK: %d", rr.Code)
-	}
+	assert.Equal(t, http.StatusOK, res.StatusCode, "response should be OK")
 }
