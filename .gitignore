@@ -13,3 +13,13 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+**/.DS_Store
+**/.idea
+**/.iml
+**/.vscode
+**/*.env
+!sample*.env
+!test*.env
+*-traces.txt
+**/.*.go
