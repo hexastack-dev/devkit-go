@@ -17,7 +17,7 @@ func ExampleNew_withTag() {
 	err := errors.New("oopsie", errors.WithTag(1))
 	fmt.Println(err)
 	// Output:
-	// gitlab.com/hexastack/go/sdk/errors_test/errors_example_test.go:17: oopsie
+	// github.com/hexastack-dev/devkit-go/errors_test/errors_example_test.go:17: oopsie
 }
 
 func ExampleTag() {
@@ -25,14 +25,14 @@ func ExampleTag() {
 	err = errors.Tag(err, 1)
 	fmt.Println(err)
 	// Output:
-	// gitlab.com/hexastack/go/sdk/errors_test/errors_example_test.go:25: oopsie
+	// github.com/hexastack-dev/devkit-go/errors_test/errors_example_test.go:25: oopsie
 }
 
 func ExampleErrorf() {
 	err := errors.Errorf("oopsie")
 	fmt.Println(err)
 	// Output:
-	// gitlab.com/hexastack/go/sdk/errors_test/errors_example_test.go:32: oopsie
+	// github.com/hexastack-dev/devkit-go/errors_test/errors_example_test.go:32: oopsie
 }
 
 func ExampleErrorf_other() {
@@ -40,5 +40,5 @@ func ExampleErrorf_other() {
 	err = errors.Errorf("dang: %w", err)
 	fmt.Println(err)
 	// Output:
-	// gitlab.com/hexastack/go/sdk/errors_test/errors_example_test.go:40: dang: oopsie
+	// github.com/hexastack-dev/devkit-go/errors_test/errors_example_test.go:40: dang: oopsie
 }
