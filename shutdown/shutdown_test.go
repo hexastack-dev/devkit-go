@@ -61,7 +61,7 @@ func TestShutdown(t *testing.T) {
 		})
 		sh := New(nil, 2*sleep, listeners)
 		sh.notifier = notifier
-		sig, err := sh.Wait("")
+		sig, err := sh.Wait()
 		if err != nil {
 			t.Errorf("should not return any error: %v", err)
 		}
@@ -86,7 +86,7 @@ func TestShutdown(t *testing.T) {
 
 		sh := New(nil, time.Millisecond, listeners)
 		sh.notifier = notifier
-		_, err := sh.Wait("")
+		_, err := sh.Wait()
 		if !errors.Is(err, context.DeadlineExceeded) {
 			t.Errorf("should return timeout error: context deadline exceeded: %v", err)
 		}

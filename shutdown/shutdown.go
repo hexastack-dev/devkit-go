@@ -24,7 +24,6 @@ func (n osSignalNotifierFunc) Notify(c chan<- os.Signal, sig ...os.Signal) {
 }
 
 type Shutdown struct {
-	logger    log.Logger
 	timeout   time.Duration
 	listeners map[string]Listener
 	notifier  signalNotifier
@@ -42,7 +41,6 @@ func (f ListenerFunc) OnShutdown(ctx context.Context) error {
 
 func New(logger log.Logger, timeout time.Duration, listeners map[string]Listener) *Shutdown {
 	return &Shutdown{
-		logger:    logger,
 		timeout:   timeout,
 		listeners: listeners,
 		notifier:  osSignalNotifierFunc(signal.Notify),
@@ -54,17 +52,14 @@ func New(logger log.Logger, timeout time.Duration, listeners map[string]Listener
 // After signal is received, this method will run Listener.OnShutdown in parallel,
 // the operation must complete under specified timeout. If any listeners return an
 // error or operation is timed out this method will call os.Exit(1).
-func (s *Shutdown) Wait(msg string) (os.Signal, error) {
+func (s *Shutdown) Wait() (os.Signal, error) {
 	quit := make(chan os.Signal, 1)
 	defer close(quit)
 
 	s.notifier.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
-	if msg != "" {
-		getLogger(s.logger).Info(msg)
-	}
 	// wait for shutdown signals
 	sig := <-quit
-	getLogger(s.logger).Info(fmt.Sprintf("Received signal %s, shutting down", sig.String()))
+	log.Debug(fmt.Sprintf("Received signal %s, shutting down", sig.String()))
 	// timeoutFunc := time.AfterFunc(s.timeout, func() {
 	// 	err := fmt.Errorf("shutdown did not complete after %d%s", s.timeout.Milliseconds(), "ms")
 	// 	getLogger(s.logger).Error("Shutdown timeout", err)
@@ -83,11 +78,11 @@ func (s *Shutdown) Wait(msg string) (os.Signal, error) {
 
 	select {
 	case <-ctx.Done():
-		err := fmt.Errorf("shutdown: shutdown did not complete after %d%s: %w", s.timeout.Milliseconds(), "ms", ctx.Err())
+		err := fmt.Errorf("shutdown did not complete after %d%s: %w", s.timeout.Milliseconds(), "ms", ctx.Err())
 		return sig, err
 	case ok := <-done:
 		if !ok {
-			return sig, errors.New("shutdown: shutdown completed with error")
+			return sig, errors.New("shutdown completed with error")
 		} else {
 			return sig, nil
 		}
@@ -104,9 +99,9 @@ func (s *Shutdown) onShutdown(ctx context.Context) bool {
 		go func(name string, listener Listener) {
 			defer wg.Done()
 
-			getLogger(s.logger).Debug(fmt.Sprintf("Running shutdown listener: %s", name))
+			log.Debug(fmt.Sprintf("Running shutdown listener: %s", name))
 			if err := listener.OnShutdown(ctx); err != nil {
-				getLogger(s.logger).Error(fmt.Sprintf("Shutdown listener %s return an error", name), err)
+				log.Error(fmt.Sprintf("Shutdown listener %s return an error", name), err)
 			} else {
 				ok = true
 			}
@@ -114,11 +109,4 @@ func (s *Shutdown) onShutdown(ctx context.Context) bool {
 	}
 	wg.Wait()
 	return ok
-}
-
-func getLogger(logger log.Logger) log.Logger {
-	if logger == nil {
-		return log.GetLogger()
-	}
-	return logger
 }
