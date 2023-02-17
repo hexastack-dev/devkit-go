@@ -1,14 +1,18 @@
 package log
 
-import "context"
+import (
+	"context"
+	"log"
+)
 
 var globalLogger Logger
 
 func init() {
-	globalLogger = &NoOpLogger{}
+	globalLogger = NewSimpleLogger(log.Default().Writer())
 }
 
-// GetLogger get global logger, by default global logger set to NoOpLogger.
+// GetLogger get global logger, by default global logger use SimpleLogger and use
+// standard log default writer (log.Default().Writer()) as it's writer.
 // Use SetLogger to set global logger.
 func GetLogger() Logger {
 	return globalLogger

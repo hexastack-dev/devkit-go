@@ -2,7 +2,11 @@ package log
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"log"
 	"os"
+	"time"
 )
 
 type LogLevel int8
@@ -45,11 +49,11 @@ type Logger interface {
 	WithContext(ctx context.Context) Logger
 }
 
+var _ Logger = &NoOpLogger{}
+
 // NoOpLogger will not writes out logs to any output. All NoOpLogger method basically doesn't do anything
 // except for Fatal, it will simply call os.Exit(1).
 type NoOpLogger struct{}
-
-var _ Logger = &NoOpLogger{}
 
 // Fatal call os.Exit(1)
 func (l *NoOpLogger) Fatal(msg string, err error, optfields ...LogField) {
@@ -63,9 +67,91 @@ func (l *NoOpLogger) WithContext(ctx context.Context) Logger {
 	return l
 }
 
-type Writer func(msg string, optfields ...LogField)
+// WriterFunc takes Logger's log method signature to implement io.Writer,
+// this is useful when you want to use Logger as standard log's output.
+// ie. stdlog.SetOutput(log.WriterFunc(logger.Debug))
+type WriterFunc func(msg string, optfields ...LogField)
 
-func (w Writer) Write(m []byte) (n int, err error) {
+func (w WriterFunc) Write(m []byte) (n int, err error) {
 	w(string(m))
 	return len(m), nil
+}
+
+var _ Logger = &SimpleLogger{}
+
+type SimpleLogger struct {
+	l *log.Logger
+}
+
+func NewSimpleLogger(w io.Writer) *SimpleLogger {
+	if w == nil {
+		w = log.Default().Writer()
+	}
+	l := log.New(w, "", 0)
+	return &SimpleLogger{
+		l: l,
+	}
+}
+
+// Fatal call os.Exit(1)
+func (l *SimpleLogger) Fatal(msg string, err error, optfields ...LogField) {
+	l.writeLog(FatalLogLevel, msg, err, optfields...)
+	os.Exit(1)
+}
+
+func (l *SimpleLogger) Error(msg string, err error, optfields ...LogField) {
+	l.writeLog(ErrorLogLevel, msg, err, optfields...)
+}
+
+func (l *SimpleLogger) Warn(msg string, optfields ...LogField) {
+	l.writeLog(WarnLogLevel, msg, nil, optfields...)
+}
+
+func (l *SimpleLogger) Info(msg string, optfields ...LogField) {
+	l.writeLog(InfoLogLevel, msg, nil, optfields...)
+}
+
+func (l *SimpleLogger) Debug(msg string, optfields ...LogField) {
+	l.writeLog(DebugLogLevel, msg, nil, optfields...)
+}
+
+func (l *SimpleLogger) WithContext(ctx context.Context) Logger {
+	return l
+}
+
+func (l *SimpleLogger) writeLog(lv LogLevel, msg string, err error, optfields ...LogField) {
+	tf := "2006-01-02T15:04:05.000Z0700"
+	now := time.Now()
+	var b []byte
+	b = append(b, "timestamp:"...)
+	b = now.AppendFormat(b, tf)
+	b = append(b, "\tlevel:"...)
+
+	switch lv {
+	case FatalLogLevel:
+		b = append(b, "fatal"...)
+		b = append(b, "\terror:"...)
+		b = append(b, err.Error()...)
+	case ErrorLogLevel:
+		b = append(b, "error"...)
+		b = append(b, "\terror:"...)
+		b = append(b, err.Error()...)
+	case WarnLogLevel:
+		b = append(b, "warn"...)
+	case InfoLogLevel:
+		b = append(b, "info"...)
+	default:
+		b = append(b, "debug"...)
+	}
+
+	b = append(b, "\tmessage:"...)
+	b = append(b, msg...)
+
+	for _, field := range optfields {
+		b = append(b, '\t')
+		b = append(b, field.Key...)
+		b = append(b, ':')
+		b = append(b, fmt.Sprint(field.Value)...)
+	}
+	l.l.Println(string(b))
 }
