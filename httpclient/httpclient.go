@@ -46,13 +46,18 @@ func New(config Config) (*http.Client, error) {
 		return nil, err
 	}
 
-	transport := newTransport(tlsConfig)
+	transport := NewTransport(tlsConfig)
+	client := NewWithTransport(transport, config.Timeout)
+	return client, nil
+}
+
+func NewWithTransport(transport *http.Transport, timeout time.Duration) *http.Client {
 	client := &http.Client{
-		Timeout:   config.Timeout,
+		Timeout:   timeout,
 		Transport: otelhttp.NewTransport(transport),
 	}
 
-	return client, nil
+	return client
 }
 
 func newTLSConfig(rootCAs *x509.CertPool, insecureSkipVerify bool) (*tls.Config, error) {
@@ -94,7 +99,7 @@ func appendCert(certPool *x509.CertPool, certfile string) error {
 	return nil
 }
 
-func newTransport(tlsConfig *tls.Config) *http.Transport {
+func NewTransport(tlsConfig *tls.Config) *http.Transport {
 	transport := &http.Transport{
 		DialContext: defaultTransportDialContext(&net.Dialer{
 			Timeout:   30 * time.Second,
