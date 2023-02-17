@@ -16,9 +16,9 @@ func (h *ErrorWithHandler) Error() string {
 }
 
 func (h *ErrorWithHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if h.ErrorHandlerFunc == nil {
-		w.WriteHeader(h.StatusCode)
+	if h.ErrorHandlerFunc != nil {
+		h.ErrorHandlerFunc(h.Err, h.StatusCode)(w, r)
 		return
 	}
-	h.ErrorHandlerFunc(h.Err, h.StatusCode)(w, r)
+	w.WriteHeader(h.StatusCode)
 }
