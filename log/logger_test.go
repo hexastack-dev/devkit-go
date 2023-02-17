@@ -75,8 +75,10 @@ func TestSimpleLogger_Debug(t *testing.T) {
 	logger := log.NewSimpleLogger(observer)
 
 	writeLog(logger, log.DebugLogLevel)
-	assert.Equal(t, observer.entries, 1)
-	assert.Equal(t, "Hello", observer.entries[0])
+	assert.Equal(t, 1, len(observer.entries))
+	assert.Greater(t, len(observer.entries[0]), 40)
+	suf := observer.entries[0][39:]
+	assert.Equal(t, "level:debug\tmessage:Hello\n", suf)
 }
 
 func writeLog(logger log.Logger, lv log.LogLevel, fields ...log.LogField) {
