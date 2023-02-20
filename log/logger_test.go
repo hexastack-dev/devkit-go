@@ -72,7 +72,7 @@ func (l *logObserver) Write(m []byte) (n int, err error) {
 
 func TestSimpleLogger_Debug(t *testing.T) {
 	observer := &logObserver{}
-	logger := log.NewSimpleLogger(observer)
+	logger := log.NewSimpleLogger(observer, log.DebugLogLevel)
 
 	writeLog(logger, log.DebugLogLevel)
 	assert.Equal(t, 1, len(observer.entries))
@@ -83,8 +83,9 @@ func TestSimpleLogger_Debug(t *testing.T) {
 
 func TestSimpleLogger_Info(t *testing.T) {
 	observer := &logObserver{}
-	logger := log.NewSimpleLogger(observer)
+	logger := log.NewSimpleLogger(observer, log.InfoLogLevel)
 
+	writeLog(logger, log.DebugLogLevel)
 	writeLog(logger, log.InfoLogLevel)
 	assert.Equal(t, 1, len(observer.entries))
 	assert.Greater(t, len(observer.entries[0]), 40)
@@ -94,7 +95,7 @@ func TestSimpleLogger_Info(t *testing.T) {
 
 func TestSimpleLogger_Warn(t *testing.T) {
 	observer := &logObserver{}
-	logger := log.NewSimpleLogger(observer)
+	logger := log.NewSimpleLogger(observer, log.InfoLogLevel)
 
 	writeLog(logger, log.WarnLogLevel)
 	assert.Equal(t, 1, len(observer.entries))
@@ -105,7 +106,7 @@ func TestSimpleLogger_Warn(t *testing.T) {
 
 func TestSimpleLogger_Error(t *testing.T) {
 	observer := &logObserver{}
-	logger := log.NewSimpleLogger(observer)
+	logger := log.NewSimpleLogger(observer, log.InfoLogLevel)
 
 	writeErrorLog(logger, errors.New("oopsie"))
 	assert.Equal(t, 1, len(observer.entries))
@@ -136,7 +137,7 @@ func (w *noopWriter) Write(m []byte) (n int, err error) {
 }
 
 func BenchmarkSimpleLogger(b *testing.B) {
-	logger := log.NewSimpleLogger(&noopWriter{})
+	logger := log.NewSimpleLogger(&noopWriter{}, log.InfoLogLevel)
 
 	b.ResetTimer()
 	b.Run("log", func(b *testing.B) {

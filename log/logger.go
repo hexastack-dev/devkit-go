@@ -80,16 +80,18 @@ func (w WriterFunc) Write(m []byte) (n int, err error) {
 var _ Logger = &SimpleLogger{}
 
 type SimpleLogger struct {
-	l *log.Logger
+	l  *log.Logger
+	lv LogLevel
 }
 
-func NewSimpleLogger(w io.Writer) *SimpleLogger {
+func NewSimpleLogger(w io.Writer, lv LogLevel) *SimpleLogger {
 	if w == nil {
 		w = log.Default().Writer()
 	}
 	l := log.New(w, "", 0)
 	return &SimpleLogger{
-		l: l,
+		l:  l,
+		lv: lv,
 	}
 }
 
@@ -120,6 +122,10 @@ func (l *SimpleLogger) WithContext(ctx context.Context) Logger {
 }
 
 func (l *SimpleLogger) writeLog(lv LogLevel, msg string, err error, optfields ...LogField) {
+	if l.lv > lv {
+		return
+	}
+
 	tf := "2006-01-02T15:04:05.000Z0700"
 	now := time.Now()
 	var b []byte

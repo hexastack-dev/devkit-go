@@ -8,7 +8,7 @@ import (
 var globalLogger Logger
 
 func init() {
-	globalLogger = NewSimpleLogger(log.Default().Writer())
+	globalLogger = NewSimpleLogger(log.Default().Writer(), DebugLogLevel)
 }
 
 // GetLogger get global logger, by default global logger use SimpleLogger and use

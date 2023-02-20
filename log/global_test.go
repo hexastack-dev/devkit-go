@@ -6,10 +6,11 @@ import (
 
 	"github.com/hexastack-dev/devkit-go/log"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func setGlobalLogger(observer *logObserver) {
-	logger := log.NewSimpleLogger(observer)
+	logger := log.NewSimpleLogger(observer, log.DebugLogLevel)
 	log.SetLogger(logger)
 }
 
@@ -29,8 +30,8 @@ func TestInfo(t *testing.T) {
 	setGlobalLogger(observer)
 
 	writeGlobalLog(log.InfoLogLevel)
-	assert.Equal(t, 1, len(observer.entries))
-	assert.Greater(t, len(observer.entries[0]), 40)
+	require.Equal(t, 1, len(observer.entries))
+	require.Greater(t, len(observer.entries[0]), 40)
 	suf := observer.entries[0][39:]
 	assert.Equal(t, "level:info\tmessage:Hello\n", suf)
 }
