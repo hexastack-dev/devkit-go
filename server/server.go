@@ -138,6 +138,7 @@ func getLogger(logger log.Logger) log.Logger {
 // A configured Requestlogger will log all requests except HealthChecks.
 func (srv *Server) ListenAndServe(addr string) error {
 	srv.init()
+	getLogger(srv.logger).Debug("Listen and serve at: " + addr)
 	return srv.driver.ListenAndServe(addr, srv.wrappedHandler)
 }
 
@@ -152,6 +153,7 @@ func (srv *Server) ListenAndServeTLS(addr, certFile, keyFile string) error {
 		return fmt.Errorf("driver %T does not support ListenAndServeTLS", srv.driver)
 	}
 	srv.init()
+	getLogger(srv.logger).Debug("Listen and serve TLS at: " + addr)
 	return tlsDriver.ListenAndServeTLS(addr, certFile, keyFile, srv.wrappedHandler)
 }
 
