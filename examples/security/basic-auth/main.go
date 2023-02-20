@@ -29,8 +29,8 @@ func handlePublic(w http.ResponseWriter, r *http.Request) {
 func handleAuditor(w http.ResponseWriter, r *http.Request) {
 	msg := "hello %s, this path accessible by role auditor"
 
-	w.WriteHeader(http.StatusOK)
 	if u, authenticated := principal.UserFromContext(r.Context()); authenticated {
+		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, msg, u.Id)
 	} else {
 		panic("should be authenticated")
@@ -40,8 +40,8 @@ func handleAuditor(w http.ResponseWriter, r *http.Request) {
 func handleEditor(w http.ResponseWriter, r *http.Request) {
 	msg := "hello %s, this path accessible by role editor"
 
-	w.WriteHeader(http.StatusOK)
 	if u, authenticated := principal.UserFromContext(r.Context()); authenticated {
+		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, msg, u.Id)
 	} else {
 		panic("should be authenticated")
@@ -51,8 +51,8 @@ func handleEditor(w http.ResponseWriter, r *http.Request) {
 func handleAuthenticated(w http.ResponseWriter, r *http.Request) {
 	msg := "hello %s, this path accessible by authenticated users"
 
-	w.WriteHeader(http.StatusOK)
 	if u, authenticated := principal.UserFromContext(r.Context()); authenticated {
+		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, msg, u.Id)
 	} else {
 		panic("should be authenticated")
@@ -145,6 +145,7 @@ func main() {
 	mux.Handle("/", publicRoute())
 	mux.Handle("/auditor", auditorRoute())
 	mux.Handle("/editor", editorRoute())
+	// mux.Handle("/authenticated", http.HandlerFunc(handleAuthenticated))
 	mux.Handle("/authenticated", authenticatedRoute())
 	srv := server.New(mux, nil)
 
