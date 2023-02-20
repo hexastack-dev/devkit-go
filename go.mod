@@ -3,7 +3,7 @@ module github.com/hexastack-dev/devkit-go
 go 1.20
 
 require (
-	github.com/hexastack-dev/devkit-go/log v0.0.0-20230217092015-9457709a7a67
+	github.com/hexastack-dev/devkit-go/log v0.0.0-20230220084410-a316d52e529d
 	github.com/stretchr/testify v1.8.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.39.0
 	go.opentelemetry.io/otel v1.13.0

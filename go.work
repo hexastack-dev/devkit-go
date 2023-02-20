@@ -2,6 +2,11 @@ go 1.20
 
 use (
 	.
+	./examples/globallog
+	./examples/security/basic-auth
+	./examples/server
+	./examples/shutdown
+	./examples/simplelog
 	./log
 	./log/drivers/zaplog
 	./security

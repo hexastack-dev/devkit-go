@@ -9,8 +9,8 @@ github.com/go-logr/logr v1.2.3/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbV
 github.com/go-logr/stdr v1.2.2 h1:hSWxHoqTgW2S2qGc0LTAI563KZ5YKYRhT3MFKZMbjag=
 github.com/go-logr/stdr v1.2.2/go.mod h1:mMo/vtBO5dYbehREoey6XUKy/eSumjCCveDpRre4VKE=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
-github.com/hexastack-dev/devkit-go/log v0.0.0-20230217092015-9457709a7a67 h1:JSkdF+y0iDwinDIqRJyyS0GJ/km/PpM0U5vDkZ5gvm8=
-github.com/hexastack-dev/devkit-go/log v0.0.0-20230217092015-9457709a7a67/go.mod h1:AG/Ng9BsQu7oZ+45zeRyzBTIx7euP+MRmsrgkDJD0kc=
+github.com/hexastack-dev/devkit-go/log v0.0.0-20230220084410-a316d52e529d h1:EgHhBogM5aWRPNiFoI+lHAMkAi/AeUXsS7zORMFpAFc=
+github.com/hexastack-dev/devkit-go/log v0.0.0-20230220084410-a316d52e529d/go.mod h1:AG/Ng9BsQu7oZ+45zeRyzBTIx7euP+MRmsrgkDJD0kc=
 github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
