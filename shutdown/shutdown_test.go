@@ -59,7 +59,7 @@ func TestShutdown(t *testing.T) {
 			res <- "ok"
 			return nil
 		})
-		sh := New(nil, 2*sleep, listeners)
+		sh := New(2*sleep, listeners)
 		sh.notifier = notifier
 		sig, err := sh.Wait()
 		if err != nil {
@@ -84,7 +84,7 @@ func TestShutdown(t *testing.T) {
 			return nil
 		})
 
-		sh := New(nil, time.Millisecond, listeners)
+		sh := New(time.Millisecond, listeners)
 		sh.notifier = notifier
 		_, err := sh.Wait()
 		if !errors.Is(err, context.DeadlineExceeded) {

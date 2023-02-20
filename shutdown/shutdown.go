@@ -39,7 +39,7 @@ func (f ListenerFunc) OnShutdown(ctx context.Context) error {
 	return f(ctx)
 }
 
-func New(logger log.Logger, timeout time.Duration, listeners map[string]Listener) *Shutdown {
+func New(timeout time.Duration, listeners map[string]Listener) *Shutdown {
 	return &Shutdown{
 		timeout:   timeout,
 		listeners: listeners,
