@@ -55,7 +55,7 @@ func TestError(t *testing.T) {
 	assert.Equal(t, 1, len(observer.entries))
 	assert.Greater(t, len(observer.entries[0]), 40)
 	suf := observer.entries[0][39:]
-	assert.Equal(t, "level:error\terror:oopsie\tmessage:Something went wrong\n", suf)
+	assert.Equal(t, "level:error\tmessage:Something went wrong\terror:oopsie\n", suf)
 }
 
 func writeGlobalLog(lv log.LogLevel, fields ...log.LogField) {

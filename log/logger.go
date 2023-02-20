@@ -136,12 +136,8 @@ func (l *SimpleLogger) writeLog(lv LogLevel, msg string, err error, optfields ..
 	switch lv {
 	case FatalLogLevel:
 		b = append(b, "fatal"...)
-		b = append(b, "\terror:"...)
-		b = append(b, err.Error()...)
 	case ErrorLogLevel:
 		b = append(b, "error"...)
-		b = append(b, "\terror:"...)
-		b = append(b, err.Error()...)
 	case WarnLogLevel:
 		b = append(b, "warn"...)
 	case InfoLogLevel:
@@ -152,6 +148,11 @@ func (l *SimpleLogger) writeLog(lv LogLevel, msg string, err error, optfields ..
 
 	b = append(b, "\tmessage:"...)
 	b = append(b, msg...)
+
+	if err != nil {
+		b = append(b, "\terror:"...)
+		b = append(b, err.Error()...)
+	}
 
 	for _, field := range optfields {
 		b = append(b, '\t')
