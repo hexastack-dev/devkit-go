@@ -40,6 +40,8 @@ func (s *signalNotifierTest) notify(sig os.Signal) {
 	}
 }
 
+var errSWW = errors.New("something went wrong")
+
 func TestShutdown(t *testing.T) {
 	notifier := &signalNotifierTest{}
 	res := make(chan string, 1)
@@ -71,6 +73,29 @@ func TestShutdown(t *testing.T) {
 		if out := <-res; out != "ok" {
 			t.Errorf("result should equals ok: %s", out)
 		}
+	}()
+
+	wg.Add(1)
+	// negative test, listener return an error
+	go func() {
+		defer wg.Done()
+
+		listeners := make(map[string]Listener)
+		listeners["test"] = ListenerFunc(func(ctx context.Context) error {
+			return errSWW
+		})
+
+		sh := New(time.Millisecond, listeners)
+		sh.notifier = notifier
+		_, err := sh.Wait()
+		if !errors.Is(err, errSWW) {
+			t.Errorf("should return errSWW: %v", err)
+		}
+	}()
+
+	go func() {
+		time.Sleep(sleep)
+		notifier.notify(os.Interrupt)
 	}()
 
 	wg.Add(1)

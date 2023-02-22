@@ -67,7 +67,7 @@ func (s *Shutdown) Wait() (os.Signal, error) {
 	// })
 	// defer timeoutFunc.Stop()
 
-	done := make(chan bool, 1)
+	done := make(chan error, 1)
 
 	ctx, cancel := context.WithTimeout(context.Background(), s.timeout)
 	defer cancel()
@@ -80,19 +80,21 @@ func (s *Shutdown) Wait() (os.Signal, error) {
 	case <-ctx.Done():
 		err := fmt.Errorf("shutdown did not complete after %d%s: %w", s.timeout.Milliseconds(), "ms", ctx.Err())
 		return sig, err
-	case ok := <-done:
-		if !ok {
-			return sig, errors.New("shutdown completed with error")
+	case err := <-done:
+		if err != nil {
+			return sig, fmt.Errorf("shutdown completed with error: %w", err)
 		} else {
 			return sig, nil
 		}
 	}
 }
 
-func (s *Shutdown) onShutdown(ctx context.Context) bool {
+func (s *Shutdown) onShutdown(ctx context.Context) error {
 	var (
 		wg sync.WaitGroup
-		ok bool
+
+		rootErr error
+		mutex   sync.Mutex
 	)
 	for name, listener := range s.listeners {
 		wg.Add(1)
@@ -101,12 +103,20 @@ func (s *Shutdown) onShutdown(ctx context.Context) bool {
 
 			log.Debug(fmt.Sprintf("Running shutdown listener: %s", name))
 			if err := listener.OnShutdown(ctx); err != nil {
-				log.Error(fmt.Sprintf("Shutdown listener %s return an error", name), err)
-			} else {
-				ok = true
+				err = fmt.Errorf("shutdown listener %s return an error: %w", name, err)
+				func() {
+					mutex.Lock()
+					defer mutex.Unlock()
+
+					if rootErr == nil {
+						rootErr = err
+					} else {
+						rootErr = errors.Join(rootErr, err)
+					}
+				}()
 			}
 		}(name, listener)
 	}
 	wg.Wait()
-	return ok
+	return rootErr
 }
