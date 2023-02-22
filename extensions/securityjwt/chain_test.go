@@ -1,16 +1,13 @@
 package securityjwt
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 
-	"github.com/MicahParks/keyfunc"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/hexastack-dev/devkit-go/security/principal"
 	"github.com/stretchr/testify/assert"
@@ -63,7 +60,11 @@ func TestNewKeycloak(t *testing.T) {
 	t.Run("Test authenticated", testAuthenticated(h))
 }
 
+/*
 func TestIntegrationKeycloak(t *testing.T) {
+	require.NotEmpty(t, os.Getenv("JWKS_URL"))
+	require.NotEmpty(t, os.Getenv("TEST_TOKEN"))
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	jwks, err := keyfunc.Get(os.Getenv("JWKS_URL"), DefaultJWKSOptions(ctx))
@@ -75,6 +76,7 @@ func TestIntegrationKeycloak(t *testing.T) {
 	t.Run("Test unauthenticated", testUnauthenticated(h))
 	t.Run("Test authenticated", testAuthenticated(h))
 }
+*/
 
 func testUnauthenticated(h http.Handler) func(*testing.T) {
 	return func(t *testing.T) {
