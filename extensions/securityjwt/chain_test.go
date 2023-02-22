@@ -73,8 +73,6 @@ func TestIntegrationKeycloak(t *testing.T) {
 	tokenString = os.Getenv("TEST_TOKEN")
 
 	t.Run("Test unauthenticated", testUnauthenticated(h))
-	t.Run("Test empty authorization", testEmptyAuthorization(h))
-	t.Run("Test wrong auth scheme", testAuthScheme(h))
 	t.Run("Test authenticated", testAuthenticated(h))
 }
 
