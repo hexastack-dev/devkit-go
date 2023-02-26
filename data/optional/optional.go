@@ -1,6 +1,7 @@
 package optional
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 
@@ -28,9 +29,9 @@ func (v Value[T]) IsDefined() bool {
 
 // Value return passed value, if the Value comes from Nil()
 // then this will return zeroed value of passed data type.
-func (v Value[T]) Value() T {
-	return v.value
-}
+// func (v Value[T]) Value() T {
+// 	return v.value
+// }
 
 // String return string representation of value.
 func (v Value[T]) String() string {
@@ -50,7 +51,7 @@ func (v Value[T]) ValuePtr() *T {
 }
 
 func (v Value[T]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.Value())
+	return json.Marshal(v.value)
 }
 
 // UnmarshalJSON will return null if Value is considered as nil.
@@ -86,6 +87,14 @@ func (v *Value[T]) Scan(value any) error {
 		return nil
 	}
 	return fmt.Errorf("%w: cannot assign %v of type %T into %T", ErrTypeMismatch, value, value, zero)
+}
+
+func (v *Value[T]) Value() (driver.Value, error) {
+	if !v.IsNil() {
+		return nil, nil
+	}
+
+	return v.value, nil
 }
 
 /*
