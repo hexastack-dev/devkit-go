@@ -29,16 +29,16 @@ func (v Value[T]) IsDefined() bool {
 
 // Value return passed value, if the Value comes from Nil()
 // then this will return zeroed value of passed data type.
-// func (v Value[T]) Value() T {
-// 	return v.value
-// }
+func (v Value[T]) Val() T {
+	return v.value
+}
 
 // String return string representation of value.
 func (v Value[T]) String() string {
 	if v.IsNil() {
 		return "nil"
 	}
-	return fmt.Sprint(v.Value())
+	return fmt.Sprint(v.Val())
 }
 
 // ValuePtr return nil if v.IsNil() returns true, return pointer
