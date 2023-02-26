@@ -3,7 +3,11 @@ package optional
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/hexastack-dev/devkit-go/errors"
 )
+
+var ErrTypeMismatch = errors.New("type mismatch")
 
 // Value hold actual data and nil flag.
 type Value[T comparable] struct {
@@ -66,6 +70,22 @@ func (v *Value[T]) UnmarshalJSON(data []byte) error {
 	v.present = true
 	v.value = parsed
 	return nil
+}
+
+func (v *Value[T]) Scan(value any) error {
+	var zero T
+	v.defined = true
+	if value == nil {
+		v.present = false
+		v.value = zero
+		return nil
+	}
+	if val, ok := value.(T); ok {
+		v.present = true
+		v.value = val
+		return nil
+	}
+	return fmt.Errorf("%w: cannot assign %v of type %T into %T", ErrTypeMismatch, value, value, zero)
 }
 
 /*

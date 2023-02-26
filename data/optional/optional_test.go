@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/hexastack-dev/devkit-go/data/optional"
+	"github.com/stretchr/testify/assert"
 )
 
 type preference struct {
@@ -332,4 +333,39 @@ func TestOptional_MarshalJSON(t *testing.T) {
 		t.Errorf("marshal result should be equals, got: %s", bs)
 	}
 	fmt.Printf("%s\n", b)
+}
+
+func TestScan(t *testing.T) {
+	var (
+		test1 optional.Value[string]
+		test2 optional.Value[int]
+		test3 optional.Value[string]
+		test4 optional.Value[string]
+
+		val1     = "hello"
+		val2     = 32
+		val3 any = nil
+	)
+
+	assert.NoError(t, test1.Scan(val1))
+	assert.False(t, test1.IsNil())
+	assert.True(t, test1.IsDefined())
+	assert.Equal(t, "hello", test1.Value())
+
+	assert.NoError(t, test2.Scan(val2))
+	assert.False(t, test2.IsNil())
+	assert.True(t, test2.IsDefined())
+	assert.Equal(t, 32, test2.Value())
+
+	assert.NoError(t, test3.Scan(val3))
+	assert.True(t, test3.IsNil())
+	assert.True(t, test3.IsDefined())
+	assert.Zero(t, test3.Value())
+
+	err := test4.Scan(val2)
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, optional.ErrTypeMismatch)
+	assert.True(t, test4.IsNil())
+	assert.True(t, test4.IsDefined())
+	assert.Zero(t, test4.Value())
 }
