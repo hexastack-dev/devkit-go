@@ -49,7 +49,7 @@ INSERT INTO contacts(first_name, last_name)
 VALUES (:first_name, :last_name)`
 
 func main() {
-	db, err := sqlx.Connect("pgx", "postgres://labs:labs@localhost:5432/labs?sslmode=require")
+	db, err := sqlx.Connect("pgx", "postgres://labs:labs@localhost:5432/labs")
 	if err != nil {
 		log.Fatalln(err)
 	}
