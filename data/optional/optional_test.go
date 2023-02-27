@@ -191,25 +191,25 @@ func TestOptional_UnmarshalJSON(t *testing.T) {
 	if p.FirstName.IsNil() {
 		t.Errorf("FirstName should not be nil")
 	}
-	if !p.FirstName.IsDefined() {
+	if p.FirstName.IsNotDefined() {
 		t.Errorf("FirstName should be defined")
 	}
 
 	if p.MiddleName.IsNil() {
 		t.Errorf("MiddleName should not be nil")
 	}
-	if !p.MiddleName.IsDefined() {
+	if p.MiddleName.IsNotDefined() {
 		t.Errorf("FirstName should be defined")
 	}
 
-	if !p.LastName.IsNil() {
+	if p.LastName.IsNotNil() {
 		t.Errorf("LastName should be nil")
 	}
 	if !p.LastName.IsDefined() {
 		t.Errorf("LastName should be defined")
 	}
 
-	if !p.PreferredName.IsNil() {
+	if p.PreferredName.IsNotNil() {
 		t.Errorf("PreferredName should be nil")
 	}
 	if p.PreferredName.IsDefined() {
@@ -258,15 +258,15 @@ func TestOptional_UnmarshalJSON(t *testing.T) {
 		t.Errorf("Preference3 should not be nil")
 	} else {
 		pref := p.Preference3.Val()
-		if !pref.Push.IsNil() {
+		if pref.Push.IsNotNil() {
 			t.Errorf("Preference2.Push should be nil")
 		}
-		if !pref.TransactionLimit.IsNil() {
+		if pref.TransactionLimit.IsNotNil() {
 			t.Errorf("Preference2.TransactionLimit should be nil")
 		}
 	}
 
-	if !p.Preference4.IsNil() {
+	if p.Preference4.IsNotNil() {
 		t.Errorf("Preference4 should be nil")
 	}
 

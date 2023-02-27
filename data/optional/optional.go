@@ -1,7 +1,6 @@
 package optional
 
 import (
-	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 
@@ -17,14 +16,24 @@ type Value[T comparable] struct {
 	value   T
 }
 
-// IsNil return true if the value created by using Nil().
+// IsNil return true if the value is not present.
 func (v Value[T]) IsNil() bool {
 	return !v.present
+}
+
+// IsNotNil return true if the value is present
+func (v Value[T]) IsNotNil() bool {
+	return v.present
 }
 
 // IsDefined check whether the field is defined.
 func (v Value[T]) IsDefined() bool {
 	return v.defined
+}
+
+// IsNotDefined check whether the field is not defined.
+func (v Value[T]) IsNotDefined() bool {
+	return !v.defined
 }
 
 // Value return passed value, if the Value comes from Nil()
@@ -89,13 +98,8 @@ func (v *Value[T]) Scan(value any) error {
 	return fmt.Errorf("%w: cannot assign %v of type %T into %T", ErrTypeMismatch, value, value, zero)
 }
 
-func (v *Value[T]) Value() (driver.Value, error) {
-	if !v.IsNil() {
-		return nil, nil
-	}
-
-	return v.value, nil
-}
+// Value is reserved
+// func (v *Value[T]) Value() (driver.Value, error) { }
 
 /*
 Of return new instance of Value as defined, present with given value.
