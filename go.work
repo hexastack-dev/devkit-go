@@ -3,6 +3,7 @@ go 1.20
 use (
 	.
 	./examples/globallog
+	./examples/optionalsqlx
 	./examples/security/basic-auth
 	./examples/server
 	./examples/shutdown
