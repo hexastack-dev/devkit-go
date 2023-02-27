@@ -21,6 +21,7 @@
 **/*.env
 !sample*.env
 !test*.env
+**/*.local.env
 *-traces.txt
 **/.*.go
 **/*.coverage
